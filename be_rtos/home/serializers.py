@@ -83,12 +83,17 @@ class UpdateDeviceSerializer(serializers.ModelSerializer):
         devices = models.Device.objects.filter(room__home__id=instance.room.home.id)
         logger.info(f"devices: {devices}")
         payload = {
-            device.id: {
-                "v": 1 if device.value == 0.0 else 0,
-                "a": 1 if device.is_auto else 0
+            # device.id: {
+            #     "v": 1 if device.value == 0.0 else 0,
+            #     "a": 1 if device.is_auto else 0
+            # }
+            # for device in devices if device.type.name in ['bulb', 'water', 'fan']
+            instance.id: {
+                "v": 1 if instance.value == 0.0 else 0,
+                "a": 1 if instance.is_auto else 0
             }
-            for device in devices if device.type.name in ['bulb', 'water', 'fan']
         }
+        logger.info(f"payload: {payload}")
         publish.single(settings.CONTROL_TOPIC, payload=json.dumps(payload), qos=0, retain=False, hostname=settings.MQTT_SERVER,
            port=settings.MQTT_PORT, client_id="", keepalive=60, will=None, auth=settings.MQTT_AUTH,
            tls=settings.MQTT_TLS)
