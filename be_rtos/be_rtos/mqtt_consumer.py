@@ -92,7 +92,7 @@ class Smarthome(threading.Thread):
                 output_data.append({
                     "device_id": k,
                     "type": device.type.name,
-                    "value": value,
+                    "value": 1 if value == 0 else 0,
                 })
             except Device.DoesNotExist:
                 logger.warning(f"Device with id {k} does not exist.")
@@ -103,7 +103,7 @@ class Smarthome(threading.Thread):
             "data": json.dumps(output_data),
         }
         string_data = json.dumps(notification_data)
-        logger.info(f"Notification string data: {string_data}")
+        logger.info(f"Notification string data: {output_data}")
         notification = Notification(
             data=string_data,
             user_id=home.user.id
